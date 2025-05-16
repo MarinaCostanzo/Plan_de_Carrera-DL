@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Carrera - DL Consultores</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0b071e, #1a1032);
+        }
+
+        .presentation-container {
+            width: 90vw;
+            max-width: 1000px;
+            height: 75vh;
+            max-height: 800px; /* Puedes ajustar esto si es necesario */
+            border: 2px solid #4a3f72;
+            background-color: transparent;
+            box-shadow: 0 0 25px rgba(122, 90, 242, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0s 0.5s;
+            padding: 25px 30px; /* Reducido un poco el padding vertical */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Alinea el contenido al inicio y deja que flex-grow distribuya */
+            text-align: center;
+            background: linear-gradient(135deg, #0f0c29, #201a3a, #2b2050);
+            color: #e0e0e0;
+            overflow-y: auto; /* Scroll general para el slide si todo el contenido es muy alto */
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .slide h1 {
+            font-size: 2.3em; /* Ligeramente más pequeño */
+            color: #ffffff;
+            margin-top: 0; /* Asegurar que no haya margen superior extra */
+            margin-bottom: 15px; /* Reducido */
+        }
+        .slide h2 {
+            font-size: 1.9em; /* Ligeramente más pequeño */
+            color: #f0f0f0;
+            margin-top: 0; /* Asegurar que no haya margen superior extra */
+            margin-bottom: 15px; /* Reducido */
+            border-bottom: 1px solid #7a5af2;
+            padding-bottom: 8px; /* Reducido */
+            width: 90%;
+            max-width: 700px;
+        }
+        .slide p {
+            font-size: 1.1em; /* Ligeramente más pequeño */
+            color: #cccccc;
+            line-height: 1.6; /* Reducido */
+            max-width: 88%; /* Ajustado */
+            margin-bottom: 10px; /* Añadido margen inferior por defecto */
+        }
+        .slide ul, .slide ol {
+            list-style-position: inside;
+            text-align: left;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            color: #cccccc;
+            padding-left: 20px; /* Asegurar que haya padding para los bullets */
+        }
+        .slide li {
+            font-size: 1.05em; /* Ligeramente más pequeño */
+            margin-bottom: 10px;
+        }
+        .slide strong {
+            color: #bca9f5;
+        }
+
+        .slide img.logo-sap {
+            max-height: 65px; /* Reducido */
+            margin-top: 20px; /* Reducido */
+        }
+
+        .slide canvas {
+            border: 1px dashed #4a3f72;
+        }
+        .slide table {
+            margin-top: 15px; /* Reducido */
+            border-collapse: collapse;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgba(0,0,0,0.1);
+        }
+        .slide th, .slide td {
+            border: 1px solid #4a3f72;
+            padding: 10px; /* Reducido */
+            text-align: left;
+            color: #e0e0e0;
+        }
+        .slide th {
+            background-color: #2a204a;
+            color: #ffffff;
+            text-align: center;
+        }
+        .slide td {
+            text-align: center;
+        }
+
+        .navigation {
+            margin-top: 20px; /* Reducido */
+            display: flex;
+            gap: 15px; /* Reducido */
+        }
+
+        .navigation button {
+            padding: 10px 22px; /* Reducido */
+            font-size: 0.95em; /* Reducido */
+            cursor: pointer;
+            background-color: #7a5af2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .navigation button:hover {
+            background-color: #5c3bc0;
+            transform: translateY(-1px);
+        }
+        .navigation button:disabled {
+            background-color: #413a5e;
+            color: #888;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            bottom: 10px; /* Reducido */
+            right: 15px; /* Reducido */
+            font-size: 0.85em; /* Reducido */
+            color: #aaa;
+        }
+
+        /* Styles for the REVISED evaluation process slide */
+        .evaluation-steps-container {
+            flex-grow: 1; /* << IMPORTANTE: Ocupa el espacio vertical disponible */
+            min-height: 0; /* << IMPORTANTE: Necesario para que flexbox pueda encogerlo */
+            overflow-y: auto; /* Permite scroll interno si el contenido es aún mayor */
+            width: 100%; /* Ocupa el ancho para centrar hijos */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* Reducido */
+            padding: 5px 0; /* Padding vertical leve, sin padding horizontal aquí */
+        }
+        .evaluation-step-group {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 12px; /* Reducido */
+            border-radius: 8px;
+            width: 95%;
+            max-width: 800px;
+            text-align: center;
+            border: 1px solid rgba(74, 63, 114, 0.5);
+        }
+        .evaluation-step-group img {
+             max-width: 100%;
+             height: auto;
+             border: 1px solid #4a3f72;
+             border-radius: 5px;
+             margin-bottom: 8px; /* Reducido */
+        }
+         .evaluation-step-group h3 {
+            margin-top: 0;
+            margin-bottom: 6px; /* Reducido */
+            color: #d1c4e9;
+            font-size:1.15em; /* Reducido */
+            text-align: left;
+        }
+        .evaluation-step-group p {
+            font-size:0.95em; /* Reducido */
+            color: #c0c0c0;
+            margin-top: 0;
+            text-align: left;
+            max-width: 100%;
+            line-height: 1.5; /* Ajustado */
+            margin-bottom: 0; /* Quitar margen inferior extra del p dentro del grupo */
+        }
+        /* Flex layout para los items dentro de evaluation-step-group */
+        .evaluation-step-group > div { 
+            display:flex;
+            align-items: center;
+            gap: 15px; /* Reducido */
+            flex-wrap: wrap;
+            justify-content:center;
+            width: 100%;
+        }
+        .evaluation-step-group > div > img { 
+             flex: 0 1 220px; /* Reducido el flex-basis */
+             object-fit:contain;
+        }
+        .evaluation-step-group > div > div { 
+            flex: 1 1 280px; /* Reducido el flex-basis */
+            min-width:250px; /* Reducido */
+        }
+        /* Ajustes específicos de max-height para las imágenes en la Diapositiva 9 */
+        #img-eval-step1 { max-height: 150px; } 
+        #img-eval-step2 { max-height: 170px; } 
+        #img-eval-step3 { max-height: 110px; }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container" id="presentationContainer">
+        <!-- Las diapositivas se agregarán aquí con JavaScript -->
+    </div>
+
+    <div class="navigation">
+        <button id="prevBtn">Anterior</button>
+        <button id="nextBtn">Siguiente</button>
+    </div>
+
+    <script>
+        const presentationContainer = document.getElementById('presentationContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        let slides = [];
+        let currentSlideIndex = 0;
+
+        function addSlide(contentHTML, canvasSetupFunction = null) {
+            const slideDiv = document.createElement('div');
+            slideDiv.classList.add('slide');
+            slideDiv.innerHTML = contentHTML;
+            presentationContainer.appendChild(slideDiv);
+            slides.push({ element: slideDiv, canvasSetup: canvasSetupFunction });
+            updateNavigation();
+            updateSlideCounter();
+        }
+
+        function showSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+
+            slides.forEach((slideObj, i) => {
+                if (i === index) {
+                    slideObj.element.classList.add('active');
+                    const scrollableContent = slideObj.element.querySelector('.evaluation-steps-container');
+                    if (scrollableContent) {
+                        scrollableContent.scrollTop = 0;
+                    }
+                    if (slideObj.canvasSetup) {
+                        const canvasElement = slideObj.element.querySelector('canvas');
+                        if (canvasElement) {
+                            canvasElement.getContext('2d'); 
+                            slideObj.canvasSetup(canvasElement);
+                        }
+                    }
+                } else {
+                    slideObj.element.classList.remove('active');
+                }
+            });
+            currentSlideIndex = index;
+            updateNavigation();
+            updateSlideCounter();
+        }
+
+        function updateNavigation() {
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex >= slides.length - 1;
+        }
+
+        function updateSlideCounter() {
+            const existingCounter = presentationContainer.querySelector('.slide-counter');
+            if (existingCounter) {
+                existingCounter.remove();
+            }
+            if (slides.length > 0) {
+                const newCounter = document.createElement('div');
+                newCounter.classList.add('slide-counter');
+                newCounter.textContent = `Diapositiva ${currentSlideIndex + 1} de ${slides.length}`;
+                presentationContainer.appendChild(newCounter);
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlideIndex < slides.length - 1) {
+                showSlide(currentSlideIndex + 1);
+            }
+        });
+
+        // ----- INICIO DE LA PRESENTACIÓN -----
+
+        addSlide(`
+            <h1>Plan de Carrera en DL Consultores</h1>
+            <p style="font-size: 1.3em; color: #d1c4e9; margin-bottom: 15px;">Desarrollando <strong>tu potencial</strong> en el mundo SAP</p>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/200px-SAP_2011_logo.svg.png" alt="SAP Logo" class="logo-sap">
+        `);
+
+        addSlide(`
+            <h2>Conociendo DL Consultores</h2>
+            <ul style="max-width: 80%;">
+                <li>Consultora de Sistemas especializada en <strong>todas las tecnologías de SAP</strong>.</li>
+                <li>Contamos con casi <strong>200 empleados</strong>, la mayoría consultores expertos.</li>
+                <li>Un equipo apasionado por la <strong>innovación y la excelencia</strong>.</li>
+            </ul>
+        `);
+
+        addSlide(`
+            <h2>Nuestros Talentos </h2>
+            <p style="margin-bottom: 15px;">Cada consultor se especializa según el plan de carrera que selecciona:</p>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; width: 100%; font-size: 0.9em;">
+                <ul style="text-align: left; padding-left: 20px; min-width: 260px; margin-bottom:10px;">
+                    <li><strong>SD:</strong> OTC (Order to Cash)</li>
+                    <li><strong>FI:</strong> FI (Financial Accounting)</li>
+                    <li><strong>MM:</strong> PTP (Purchase to Pay)</li>
+                    <li><strong>PP:</strong> PP / PM (Production / Plant Maintenance)</li>
+                </ul>
+                <ul style="text-align: left; padding-left: 20px; min-width: 260px;">
+                    <li><strong>BTP:</strong> BTP (Business Technology Platform)</li>
+                    <li><strong>ABAP:</strong> ABAP (Advanced Business Application Programming)</li>
+                    <li><strong>PM:</strong> PM (Project Management)</li>
+                </ul>
+            </div>
+        `);
+
+        addSlide(`
+            <h2>Tu Categoría Profesional Anual</h2>
+            <p style="margin-bottom: 15px;">Refleja tu crecimiento y se compone de tres partes fundamentales:</p>
+            <ol style="list-style-type: decimal; text-align: left; max-width: 75%; margin-top: 10px;">
+                <li><strong>Grupo:</strong> Basado en tus años de experiencia.</li>
+                <li><strong>Subgrupo:</strong> Criterios de evaluación específicos de DL y tu carrera.</li>
+                <li><strong>Skills:</strong> Experiencias y formaciones puntuales.</li>
+            </ol>
+            <p style="margin-top: 20px; font-size: 1.05em; color: #d1c4e9;">Esta categoría no solo define tu nivel actual, sino que es la <strong>llave para tu progreso</strong>, impactando directamente en tu desarrollo, responsabilidades y compensación en DL.</p>
+        `);
+
+        addSlide(`
+            <h2>Categoría - Componente 1: Grupo</h2>
+            <p style="margin-bottom:15px;">Ligado directamente a tus años de experiencia en la carrera SAP.</p>
+            <table>
+                <thead>
+                    <tr><th>Grupo</th><th>Años de Experiencia (más de)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>G</td><td>1</td></tr>
+                    <tr><td>F</td><td>2</td></tr>
+                    <tr><td>E</td><td>5</td></tr>
+                    <tr><td>D</td><td>7</td></tr>
+                    <tr><td>C</td><td>10</td></tr>
+                    <tr><td>B</td><td>12</td></tr>
+                    <tr><td>A</td><td>15</td></tr>
+                </tbody>
+            </table>
+        `);
+
+        addSlide(`
+            <h2>Categoría - Componente 2: Subgrupo</h2>
+            <p>Criterios evaluados por DL según tu carrera. <strong>¡Se espera una mejora anual!</strong></p>
+            <p style="margin-top:10px; font-size: 1em; margin-bottom:10px;">Algunos criterios incluyen:</p>
+            <ul style="max-width: 80%;">
+                <li>Cantidad de implementaciones SAP.</li>
+                <li>Años de experiencia en soporte.</li>
+                <li>Conocimientos de nuevas tecnologías SAP.</li>
+                <li>Nivel de inglés.</li>
+                <li>Flexibilidad para trabajo on site.</li>
+                <li>Otros conceptos escalables específicos de tu rol.</li>
+            </ul>
+        `);
+
+        addSlide(`
+            <h2>Categoría - Componente 3: Skills</h2>
+            <p style="margin-bottom:10px;">Experiencias y formaciones en conceptos puntuales de tu carrera.</p>
+            <ul style="max-width: 85%;">
+                <li>Ej: Conocimiento de un proceso específico para relevarlo y ejecutarlo.</li>
+                <li>Valores "Sí/No" basados en el conocimiento total esperado para un consultor de máximo nivel.</li>
+                <li><strong>Objetivo:</strong> Formación continua en todos estos puntos.</li>
+            </ul>
+        `);
+
+        addSlide(`
+            <h2>¿Cómo Funciona el Plan de Carrera?</h2>
+            <p style='font-style: italic; font-size: 0.95em; margin-bottom: 10px; color: #bca9f5;'>Un Proceso Transparente y Colaborativo</p>
+            <ol style="text-align: left; max-width: 90%; line-height: 1.7;">
+                <li><strong>Evaluación Anual:</strong> Tu gerente revisa tus avances durante la evaluación de desempeño.</li>
+                <li><strong>Registro del Plan:</strong> El gerente, <strong style='color: #d1c4e9;'>en diálogo contigo</strong>, completa los valores "actuales" de los conceptos de tu carrera, basándose en:
+                    <ul style="list-style-type: circle; margin-left: 25px; margin-top:8px; margin-bottom:8px; font-size: 0.9em;">
+                        <li>Tus logros y avances del último año.</li>
+                        <li>La información que tú proporcionas.</li>
+                    </ul>
+                </li>
+                <li><strong>Recategorización:</strong> Este proceso actualiza y, si corresponde, te recategoriza anualmente.</li>
+            </ol>
+        `);
+        
+        addSlide(`
+            <h2>Tu Plan de Carrera en Acción: Transparencia y Evolución</h2>
+            <p style="font-size: 1.05em; max-width: 90%; margin-bottom:10px;">Para asegurar un seguimiento claro, objetivo y <strong>adaptado a los tiempos</strong>, utilizamos un sistema de gestión de carreras. Así es como te apoya:</p>
+            
+            <div class="evaluation-steps-container">
+
+                <div class="evaluation-step-group">
+                    <div> 
+                        <img src="input_file_2.png" alt="Selección de Colaborador y Año" id="img-eval-step1">
+                        <div>
+                            <h3>1. Tu Perfil es el Punto de Partida</h3>
+                            <p>El proceso inicia considerando tu trayectoria y el año de evaluación. Tu fecha de ingreso, por ejemplo, nos ayuda a determinar tu <strong>Grupo</strong> inicial basado en la experiencia. Todo está centralizado para una visión integral.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="evaluation-step-group">
+                     <div style="flex-wrap: wrap-reverse;"> 
+                        <div>
+                            <h3>2. Evaluación Dinámica y Actualizada</h3>
+                            <p>Se consideran tus avances en conocimientos, implementaciones, formaciones y otros ítems clave para tu carrera (que conforman tu <strong>Subgrupo</strong> y <strong>Skills</strong>). <strong>Importante:</strong> Estos criterios se revisan y actualizan constantemente para reflejar la evolución de las tecnologías SAP y las demandas del mercado. ¡Tu desarrollo siempre será relevante!</p>
+                        </div>
+                        <img src="input_file_1.png" alt="Evaluación Detallada de Items" id="img-eval-step2">
+                    </div>
+                </div>
+
+                <div class="evaluation-step-group">
+                    <div> 
+                        <img src="input_file_4.png" alt="Reporte de Categorías" id="img-eval-step3">
+                         <div>
+                            <h3>3. Resultados Claros para Tu Crecimiento</h3>
+                            <p>Obtienes un reporte claro con tu categorización. Esto te brinda una visión precisa de tus fortalezas y te orienta sobre los próximos pasos para seguir avanzando en DL.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 10px; font-size: 1em; color: #e0e0e0; max-width:90%;">En DL, este sistema es una herramienta para <strong>dialogar sobre tu futuro</strong> y asegurar que tu plan de carrera no solo sea una guía, sino un reflejo vivo de tu evolución y de las innovaciones en nuestro sector.</p>
+        `);
+
+        addSlide(`
+            <h2>Tu Crecimiento es Nuestro Compromiso: Beneficios del Plan</h2>
+            <p style="margin-bottom:10px;">Creemos en la transparencia y el apoyo continuo para <strong>tu éxito</strong>:</p>
+            <ul style="max-width: 85%;">
+                <li><strong>Claridad Total:</strong> Sabrás qué necesitas para avanzar de categoría el próximo año.</li>
+                <li><strong>Acompañamiento Personalizado:</strong> Apoyo con asignaciones, cursos de inglés, formación SAP y más, según tu carrera y objetivos.</li>
+                <li><strong>Progresión Salarial:</strong> Tu compensación se alinea con tu avance de categoría y desempeño.</li>
+                <li><strong>Nuevas Oportunidades:</strong> Acceso a proyectos más desafiantes y estratégicos a medida que creces.</li>
+            </ul>
+        `);
+
+        addSlide(`
+            <h2>En DL, Invertimos en Vos: ¿Por Qué Nuestro Plan de Carrera Marca la Diferencia?</h2>
+            <ul style="max-width: 85%; text-align:left; list-style-type: disc; padding-left: 30px;">
+                <li>Una <strong>hoja de ruta clara</strong> para tu crecimiento profesional y salarial.</li>
+                <li>Evaluaciones <strong>justas y transparentes</strong>, enfocadas en tu desarrollo.</li>
+                <li>Apoyo continuo con <strong>formación, certificaciones y asignaciones estratégicas</strong>.</li>
+                <li>Una cultura que <strong>valora y recompensa</strong> tu dedicación y expertise.</li>
+                <li><strong>Tú eres el protagonista</strong> de tu desarrollo, y nosotros te damos las herramientas.</li>
+            </ul>
+        `);
+
+        addSlide(`
+            <h1>¡Gracias!</h1>
+            <p style="font-size: 1.25em; margin-bottom:20px;">Tu futuro en DL está lleno de oportunidades. <strong>¡Diseñémoslo juntos!</strong></p>
+            <p style="font-size: 1.15em;"><strong></strong></p>
+        `);
+
+        // Fin de las diapositivas
+        if (slides.length > 0) {
+            showSlide(0);
+        } else {
+            presentationContainer.innerHTML = '<div class="slide active" style="opacity:1; visibility:visible;"><p>No hay diapositivas para mostrar.</p></div>';
+            updateNavigation();
+        }
+    </script>
+</body>
+</html>
